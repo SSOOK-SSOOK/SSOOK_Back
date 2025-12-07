@@ -1,4 +1,4 @@
-package com.ssook.mvc.dto;
+package com.ssook.mvc.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Schema(description = "회원 가입 요청 데이터")
-public class UserDto {
+public class UserEntity {
 
     @Schema(hidden = true)
     private Long userId;
