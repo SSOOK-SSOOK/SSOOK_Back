@@ -1,7 +1,8 @@
 package com.ssook.mvc.repository;
 
-import com.ssook.mvc.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
+
+import com.ssook.mvc.entity.UserEntity;
 
 @Mapper
 public interface UserMapper {
@@ -13,5 +14,6 @@ public interface UserMapper {
 
     // 3. 닉네임 중복 체크
     boolean existsByNickname(String nickname);
+    
+    UserEntity findByEmail(String email);
 }
-
