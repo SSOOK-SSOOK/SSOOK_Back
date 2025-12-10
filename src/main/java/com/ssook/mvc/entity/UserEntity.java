@@ -1,39 +1,22 @@
 package com.ssook.mvc.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
-@Schema(description = "회원 가입 요청 데이터")
-public class UserEntity {
-
-    @Schema(hidden = true)
-    private Long userId;
-
-    @NotBlank(message = "이메일은 필수입니다.")
-    @Email(message = "이메일 형식이 올바르지 않습니다.")
-    @Schema(description = "로그인 이메일", example = "ssafy@ssook.com")
-    private String email;
-
-    @NotBlank
-    @Size(min = 4, message = "비밀번호는 4자 이상이어야 합니다.")
-    @Schema(description = "비밀번호", example = "1234")
-    private String password;
-
-    @NotBlank(message = "닉네임은 필수입니다.")
-    @Schema(description = "닉네임", example = "쑥쑥이")
-    private String nickname;
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserEntity extends BaseEntity { // 상속
     
-    // ... 나머지 필드 동일
-    @Schema(hidden = true)
-    private String role;
-    private String intro;
-    @Schema(hidden = true)
-    private LocalDateTime createdAt;
-    @Schema(hidden = true)
-    private LocalDateTime updatedAt;
+    private Long userId;        // DB: user_id (PK)
+    private String email;       // DB: email
+    private String password;    // DB: password
+    private String nickname;    // DB: nickname
+    private String role;        // DB: role
+    private String intro;       // DB: intro
+    
+    // createdAt, updatedAt은 부모(BaseEntity)에 있으므로 생략
 }
