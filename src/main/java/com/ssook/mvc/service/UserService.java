@@ -5,15 +5,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssook.mvc.dto.user.UserJoinRequest;
+import com.ssook.mvc.dto.user.UserLoginRequest;
 import com.ssook.mvc.entity.UserEntity;
 import com.ssook.mvc.repository.UserMapper;
+import com.ssook.mvc.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
+	
+	private final JwtUtil jwtUtil; // JwtUtil 주입 (RequiredArgsConstructor 덕분에 자동 주입됨)
+	
     private final UserMapper userMapper;
 
     @Transactional
@@ -38,5 +42,19 @@ public class UserService {
 
         // 5. DB 저장
         userMapper.saveUser(user);
+    }
+    
+    @Transactional(readOnly = true) // 읽기 전용 모드 (성능 최적화)
+    public String login(UserLoginRequest request) {
+        // 1. 이메일로 사용자 조회
+        UserEntity user = userMapper.findByEmail(request.getEmail());
+        
+        // 2. 사용자가 없거나, 비밀번호가 틀리면 에러
+        if (user == null || !BCrypt.checkpw(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 인증 성공 시 토큰 생성 후 반환
+        return jwtUtil.generateToken(user.getUserId(), user.getEmail());
     }
 }

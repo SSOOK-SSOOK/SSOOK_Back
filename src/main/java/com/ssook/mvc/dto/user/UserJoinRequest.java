@@ -26,7 +26,6 @@ public class UserJoinRequest {
 
     private String intro; 
 
-    // DTO -> Entity 변환
     public UserEntity toEntity(String encodedPassword) {
         return UserEntity.builder()
                 .email(this.email)
@@ -34,7 +33,6 @@ public class UserJoinRequest {
                 .nickname(this.nickname)
                 .role("ROLE_USER")
                 .intro(this.intro)
-                // createdAt은 DB가 자동으로 넣거나, MyBatis 쿼리에서 처리
                 .build();
     }
 }
