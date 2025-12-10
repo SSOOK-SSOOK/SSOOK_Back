@@ -17,6 +17,6 @@ public class VideoEntity extends BaseEntity{
     private String title;
     private String videoUrl;
     private String thumbnailUrl;
-    private Integer viewCnt;
+    private Integer viewCount;
 
 }
