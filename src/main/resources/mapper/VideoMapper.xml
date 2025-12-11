@@ -26,4 +26,23 @@
 
         LIMIT #{size} OFFSET #{offset}
     </select>
+
+    <!-- 영상 상세 조회 -->
+    <select id="selectVideoDetail" resultType="VideoDetailResponseDto">
+        SELECT v.video_id AS videoId, v.video_url AS videoUrl, v.thumbnail_url AS thumbnailUrl, v.title AS title, v.view_count AS viewCount,
+        (SELECT COUNT(*) FROM reaction r WHERE r.video_id = v.video_id) AS likeCount,
+        (SELECT COUNT(*) FROM comment c WHERE c.video_id = v.video_id AND c.is_deleted = false) AS commentCount,
+        EXISTS(SELECT 1 FROM reaction r WHERE r.video_id = v.video_id AND r.user_id = #{userId}) AS liked,
+        EXISTS(SELECT 1 FROM subscription s WHERE s.category_id = v.category_id AND s.user_id = #{userId}) AS subscribed
+
+        FROM video v
+        WHERE v.video_id = #{videoId}
+    </select>
+    
+    <!-- 조회수 증가 -->
+    <update id="increaseViewCount" parameterType="long">
+        UPDATE video
+        SET view_count = view_count + 1
+        WHERE video_id = #{videoId}
+    </update>
 </mapper>
