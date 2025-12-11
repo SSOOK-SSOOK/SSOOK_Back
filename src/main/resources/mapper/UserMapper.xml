@@ -39,5 +39,14 @@
 	<select id="findById" parameterType="long" resultType="com.ssook.mvc.entity.UserEntity">
     SELECT * FROM users WHERE user_id = #{userId}
 	</select>
+	
+	<update id="updateUser" parameterType="com.ssook.mvc.entity.UserEntity">
+    UPDATE users 
+    SET 
+        nickname = #{nickname},
+        intro = #{intro},
+        updated_at = NOW()
+    WHERE user_id = #{userId}
+	</update>
 
 </mapper>

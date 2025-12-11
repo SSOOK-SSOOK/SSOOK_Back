@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssook.mvc.dto.user.UserInfoResponse;
 import com.ssook.mvc.dto.user.UserJoinRequest;
 import com.ssook.mvc.dto.user.UserLoginRequest;
+import com.ssook.mvc.dto.user.UserModifyRequest;
 import com.ssook.mvc.entity.UserEntity;
 import com.ssook.mvc.repository.UserMapper;
 import com.ssook.mvc.util.JwtUtil;
@@ -74,4 +75,29 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
     
+ // 내 정보 수정
+    @Transactional
+    public UserInfoResponse modifyUser(Long userId, UserModifyRequest request) {
+        // 기존 유저 정보 조회
+        UserEntity user = userMapper.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+
+        // 닉네임 중복 검사 (중요: "닉네임이 바뀌었을 때만" 검사해야 함)
+        // 기존 닉네임이랑 다른데(바꿨는데) && DB에 이미 있다면 -> 에러
+        if (!user.getNickname().equals(request.getNickname()) 
+             && userMapper.existsByNickname(request.getNickname())) {
+            throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+        }
+
+        // Entity 내용 변경 (아까 만든 modify 메서드 사용)
+        user.modify(request.getNickname(), request.getIntro());
+
+        // DB 업데이트 실행
+        userMapper.updateUser(user);
+
+        // 변경된 최신 정보를 DTO로 변환해서 반환
+        return UserInfoResponse.from(user);
+    }
 }
