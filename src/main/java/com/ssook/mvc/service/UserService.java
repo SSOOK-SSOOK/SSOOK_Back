@@ -4,6 +4,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssook.mvc.dto.user.UserInfoResponse;
 import com.ssook.mvc.dto.user.UserJoinRequest;
 import com.ssook.mvc.dto.user.UserLoginRequest;
 import com.ssook.mvc.entity.UserEntity;
@@ -57,4 +58,20 @@ public class UserService {
         // 3. 인증 성공 시 토큰 생성 후 반환
         return jwtUtil.generateToken(user.getUserId(), user.getEmail());
     }
+    
+    // 내 정보 조회
+    @Transactional(readOnly = true)
+    public UserInfoResponse getMyInfo(Long userId) {
+        // DB에서 조회
+        UserEntity user = userMapper.findById(userId);
+        
+        // 없으면 에러 (혹시 탈퇴했거나 잘못된 토큰일 경우)
+        if (user == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+        
+        // Entity -> DTO 변환해서 반환 (비밀번호 제외됨)
+        return UserInfoResponse.from(user);
+    }
+    
 }

@@ -35,5 +35,9 @@
     <select id="findByEmail" parameterType="string" resultType="com.ssook.mvc.entity.UserEntity">
     SELECT * FROM users WHERE email = #{email}
 	</select>
+	
+	<select id="findById" parameterType="long" resultType="com.ssook.mvc.entity.UserEntity">
+    SELECT * FROM users WHERE user_id = #{userId}
+	</select>
 
 </mapper>
