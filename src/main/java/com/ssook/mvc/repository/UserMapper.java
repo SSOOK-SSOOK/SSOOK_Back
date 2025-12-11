@@ -6,14 +6,16 @@ import com.ssook.mvc.entity.UserEntity;
 
 @Mapper
 public interface UserMapper {
-    // 1. 회원 정보 저장 (Insert)
+    // 회원 정보 저장 (Insert)
     void saveUser(UserEntity user);
 
-    // 2. 이메일 중복 체크 (Count가 1 이상이면 true)
+    // 이메일 중복 체크 (Count가 1 이상이면 true)
     boolean existsByEmail(String email);
 
-    // 3. 닉네임 중복 체크
+    // 닉네임 중복 체크
     boolean existsByNickname(String nickname);
     
     UserEntity findByEmail(String email);
+    
+    UserEntity findById(Long userId);
 }
