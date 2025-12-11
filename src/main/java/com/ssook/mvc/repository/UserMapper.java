@@ -18,4 +18,6 @@ public interface UserMapper {
     UserEntity findByEmail(String email);
     
     UserEntity findById(Long userId);
+    
+    void updateUser(UserEntity user);
 }

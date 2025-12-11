@@ -19,4 +19,11 @@ public class UserEntity extends BaseEntity { // 상속
     private String intro;       // DB: intro
     
     // createdAt, updatedAt은 부모(BaseEntity)에 있으므로 생략
+    
+    
+	// 회원 정보 수정 편의 메서드
+    public void modify(String nickname, String intro) {
+        this.nickname = nickname;
+        this.intro = intro;
+    }
 }

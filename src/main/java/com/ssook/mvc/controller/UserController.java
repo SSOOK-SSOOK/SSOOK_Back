@@ -1,6 +1,7 @@
 package com.ssook.mvc.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import com.ssook.mvc.common.ApiResponse;
 import com.ssook.mvc.dto.user.UserInfoResponse;
 import com.ssook.mvc.dto.user.UserJoinRequest;
 import com.ssook.mvc.dto.user.UserLoginRequest;
+import com.ssook.mvc.dto.user.UserModifyRequest;
 import com.ssook.mvc.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +49,7 @@ public class UserController {
         return ApiResponse.createSuccess("로그인에 성공했습니다.");
     }
     
- // 내 정보 조회 API
+    // 내 정보 조회 API
     @GetMapping("/me")
     public ApiResponse<UserInfoResponse> getMyInfo(HttpServletRequest request) {
         // Interceptor가 넣어둔 "userId"
@@ -59,4 +61,18 @@ public class UserController {
         // 응답 (데이터가 담긴 성공 응답)
         return ApiResponse.success(userInfo);
     }
+    
+ // 내 정보 수정 API
+    @PatchMapping("/me")
+    public ApiResponse<UserInfoResponse> modifyUser(
+            @Valid @RequestBody UserModifyRequest request, 
+            HttpServletRequest httpRequest) { // 변수명 겹칠까봐 httpRequest로 씀
+        
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        
+        UserInfoResponse updatedInfo = userService.modifyUser(userId, request);
+        
+        return ApiResponse.success(updatedInfo);
+    }
+    
 }
