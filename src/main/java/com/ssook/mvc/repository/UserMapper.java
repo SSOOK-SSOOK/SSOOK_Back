@@ -20,4 +20,6 @@ public interface UserMapper {
     UserEntity findById(Long userId);
     
     void updateUser(UserEntity user);
+    
+    void deleteUser(Long userId);
 }

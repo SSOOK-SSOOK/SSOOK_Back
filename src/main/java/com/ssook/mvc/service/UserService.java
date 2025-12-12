@@ -75,7 +75,7 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
     
- // 내 정보 수정
+	// 내 정보 수정
     @Transactional
     public UserInfoResponse modifyUser(Long userId, UserModifyRequest request) {
         // 기존 유저 정보 조회
@@ -100,4 +100,18 @@ public class UserService {
         // 변경된 최신 정보를 DTO로 변환해서 반환
         return UserInfoResponse.from(user);
     }
+    
+    // 회원 탈퇴
+    @Transactional
+    public void deleteUser(Long userId) {
+        // 존재 여부 확인 (혹시 이미 지워진 아이디일 수도 있으니)
+        UserEntity user = userMapper.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+
+        // 삭제 수행
+        userMapper.deleteUser(userId);
+    }
+    
 }

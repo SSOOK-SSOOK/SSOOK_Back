@@ -1,7 +1,9 @@
 package com.ssook.mvc.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,7 +64,7 @@ public class UserController {
         return ApiResponse.success(userInfo);
     }
     
- // 내 정보 수정 API
+    // 내 정보 수정 API
     @PatchMapping("/me")
     public ApiResponse<UserInfoResponse> modifyUser(
             @Valid @RequestBody UserModifyRequest request, 
@@ -73,6 +75,29 @@ public class UserController {
         UserInfoResponse updatedInfo = userService.modifyUser(userId, request);
         
         return ApiResponse.success(updatedInfo);
+    }
+    
+    // 회원 탈퇴 API
+    @DeleteMapping("/{userId}")
+    public ApiResponse<Object> deleteUser(
+            @PathVariable Long userId, 
+            HttpServletRequest request) {
+        
+        // 토큰에서 로그인한 사람의 ID 꺼내기
+        Long tokenUserId = (Long) request.getAttribute("userId");
+        
+        // 남의 아이디를 지우려고 하는지 검사
+        // 자바에서 객체 비교는 .equals()를 써야 안전 (== 쓰면 안 됨)
+        if (!tokenUserId.equals(userId)) {
+            // 403 Forbidden 성격이지만, 편의상 예외 메시지로 처리
+            throw new IllegalArgumentException("본인의 계정만 탈퇴할 수 있습니다.");
+        }
+        
+        // 서비스 호출 (삭제)
+        userService.deleteUser(userId);
+        
+        // 성공 응답
+        return ApiResponse.createSuccess("회원 탈퇴가 완료되었습니다.");
     }
     
 }
