@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssook.mvc.repository.CommentMapper">
+    <!-- 댓글 작성 -->
+    <insert id="saveComment" parameterType="CommentEntity" useGeneratedKeys="true" keyProperty="commentId">
+        INSERT INTO comment(video_id, user_id, parent_id, content, is_deleted)
+        VALUES (#{videoId}, #{userId}, #{parentId}, #{content}, #{isDeleted})
+    </insert>
+
+    <!-- 저장된 댓글 조회 -->
+    <select id="findCommentById" parameterType="Long" resultType="CommentResponseDto">
+        SELECT
+            c.comment_id AS commentId,
+            c.parent_id AS parentId,
+            c.content AS content,
+            u.nickname AS nickname,
+            c.created_at AS createdAt
+        FROM comment c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE c.comment_id = #{commentId}
+    </select>
+
+    <!-- 부모 댓글의 videoId 조회 -->
+    <select id="findVideoIdByCommentId" parameterType="Long" resultType="Long">
+        SELECT video_id
+        FROM comment
+        WHERE comment_id = #{commentId}
+    </select>
+</mapper>
