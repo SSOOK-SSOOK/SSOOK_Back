@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssook.mvc.repository.CategoryMapper">
+    
+    <select id="selectCategoryList" resultType="com.ssook.mvc.entity.CategoryEntity">
+        SELECT * FROM category
+        ORDER BY category_id ASC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countCategory" resultType="int">
+        SELECT COUNT(*) FROM category
+    </select>
+    
+</mapper>
