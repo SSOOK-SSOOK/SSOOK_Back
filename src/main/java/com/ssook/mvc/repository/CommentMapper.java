@@ -24,7 +24,7 @@ public interface CommentMapper {
                                                   @Param("offset") int offset);
 
     // 부모 댓글의 대댓글 목록 조회
-    List<CommentResponseDto> selectRepliesByParentIds(@Param("parentIds") List<Long> parentId);
+    List<CommentResponseDto> selectRepliesByParentIds(@Param("parentIds") List<Long> parentIds);
 
     // 전체 부모 댓글 개수
     int countParentComments(Long videoId);

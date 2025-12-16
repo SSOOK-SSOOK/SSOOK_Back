@@ -33,6 +33,43 @@
 
     <!-- 부모 댓글 목록 조회 -->
     <select id="selectParentComments" resultType="CommentResponseDto">
+        SELECT
+        c.comment_id AS commentId,
+        c.user_id AS userId,
+        c.content AS content,
+        u.nickname AS nickname,
+        c.created_at AS createdAt,
+        c.is_deleted AS isDeleted
+        FROM comment c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE c.video_id = #{videoId} AND c.parentId IS NULL
+        ORDER BY c.created_at
+        LIMIT  #{limit} OFFSET #{offset}
+    </select>
 
+    <!-- 부모 댓글의 대댓글 조회 -->
+    <select id="selectRepliesByParentIds" resultType="CommentResponseDto">
+        SELECT
+        c.comment_id AS commentId,
+        c.parent_id AS parentId,
+        c.user_id AS userId,
+        c.content AS content,
+        u.nickname AS nickname,
+        c.created_at AS createdAt,
+        c.is_deleted AS isDeleted
+        FROM comment c
+        JOIN users u ON c.user_id =u.user_id
+        WHERE c.parent_id IN 
+        <foreach item="id" collection="parentIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY c.created_at
+    </select>
+
+    <!-- 전체 부모 댓글의 개수 -->
+    <select id="countParentComments" resultType="int">
+        SELECT COUNT(*)
+        FROM comment
+        WHERE video_id = #{videoId} AND parent_id IS NULL
     </select>
 </mapper>
