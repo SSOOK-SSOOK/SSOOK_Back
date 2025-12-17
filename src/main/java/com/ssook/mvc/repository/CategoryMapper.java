@@ -12,4 +12,7 @@ public interface CategoryMapper {
 
     // 전체 개수 (페이징 계산용)
     int countCategory();
+    
+    // 상세 조회
+    CategoryEntity selectCategoryById(Integer categoryId);
 }

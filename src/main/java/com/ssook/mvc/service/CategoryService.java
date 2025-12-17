@@ -41,4 +41,24 @@ public class CategoryService {
         // 공통 페이징 객체에 담아 반환
         return new PageResponse<>(content, page, size, totalCount);
     }
+    
+    // 카테고리 상세 조회
+    @Transactional(readOnly = true)
+    public CategoryResponseDto getCategoryDetail(Integer categoryId, Long userId) {
+        // DB 조회
+        CategoryEntity category = categoryMapper.selectCategoryById(categoryId);
+
+        // 예외 처리 (데이터가 없으면 정지)
+        if (category == null) {
+            throw new IllegalArgumentException("존재하지 않는 카테고리입니다.");
+        }
+
+        // DTO 변환
+        CategoryResponseDto dto = CategoryResponseDto.from(category);
+
+        // 나중에 여기에 구독 여부 체크 로직(Subscription) 추가
+        // if (userId != null) { ... }
+
+        return dto;
+    }
 }
