@@ -61,4 +61,21 @@ public class CommentController {
 
         return ApiResponse.success(comments);
     }
+
+    // 댓글 수정
+    @PatchMapping("/comment/{commentId}")
+    public ApiResponse<Object> modifyComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto commentRequestDto,
+            HttpServletRequest request
+    ) {
+        // request에서 userId 꺼내기
+        Long userId = (Long) request.getAttribute("userId");
+
+        // 서비스 호출
+        commentService.modifyComment(commentId, userId, commentRequestDto);
+
+        // 3. 응답 반환 (명세서: status 201, message "댓글이 수정되었습니다.")
+        return ApiResponse.createSuccess("댓글이 수정되었습니다.");
+        }
 }

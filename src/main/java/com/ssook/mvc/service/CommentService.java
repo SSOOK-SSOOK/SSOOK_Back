@@ -103,6 +103,28 @@ public class CommentService {
         return new PageResponse<>(parents, page, size, totalCount);
     }
 
+    // 댓글 수정
+    @Transactional
+    public void modifyComment(Long commentId, Long userId, CommentRequestDto commentRequestDto) {
+        // 1. 댓글 존재 여부 확인
+        CommentResponseDto isExistingComment = commentMapper.findCommentById(commentId);
+        if (isExistingComment == null) {
+            throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+        }
+
+        // 2. 작성자 본인 확인
+        if (!isExistingComment.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 댓글만 수정할 수 있습니다.");
+        }
+
+        // 3. 댓글 업데이트
+        CommentEntity updateEntity = CommentEntity.builder()
+                .commentId(commentId)
+                .content(commentRequestDto.getContent())
+                .build();
+
+        commentMapper.updateComment(updateEntity);
+    }
 
 
 
