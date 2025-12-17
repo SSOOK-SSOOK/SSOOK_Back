@@ -126,7 +126,23 @@ public class CommentService {
         commentMapper.updateComment(updateEntity);
     }
 
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long commentId, Long userId) {
+        // 1. 댓글 존재 여부 확인
+        CommentResponseDto existingComment = commentMapper.findCommentById(commentId);
+        if (existingComment == null) {
+            throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+        }
 
+        // 2. 작성자 본인 확인
+        if (!existingComment.getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 댓글만 삭제할 수 있습니다.");
+        }
+
+        // 3. 삭제
+        commentMapper.deleteComment(commentId);
+    }
 
     // 현재 내 Id와 댓글의 Id가 일치하는지 체크하는 보조 메서드
     private void checkIsMyComment(CommentResponseDto commentResponseDto, Long userId) {

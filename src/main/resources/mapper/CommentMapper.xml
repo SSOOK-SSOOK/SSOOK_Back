@@ -81,4 +81,13 @@
             updated_at = NOW()
         WHERE comment_id = #{commentId}
     </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="deleteComment" parameterType="Long">
+        UPDATE comment
+        SET
+            is_deleted = true,
+            updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </delete>
 </mapper>

@@ -75,7 +75,20 @@ public class CommentController {
         // 서비스 호출
         commentService.modifyComment(commentId, userId, commentRequestDto);
 
-        // 3. 응답 반환 (명세서: status 201, message "댓글이 수정되었습니다.")
+        // 3. 응답 반환 (status 201, message "댓글이 수정되었습니다.")
         return ApiResponse.createSuccess("댓글이 수정되었습니다.");
-        }
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/comment/{commentId}")
+    public ApiResponse<Object> deleteComment(@PathVariable("commentId") Long commentId, HttpServletRequest request) {
+        // request에서 userId 꺼내기
+        Long userId = (Long) request.getAttribute("userId");
+
+        // 서비스 호출
+        commentService.deleteComment(commentId, userId);
+
+        // 응답 반환 (status 201, message "댓글이 삭제되었습니다.")
+        return ApiResponse.createSuccess("댓글이 삭제되었습니다");
+    }
 }

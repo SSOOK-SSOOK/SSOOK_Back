@@ -31,4 +31,7 @@ public interface CommentMapper {
 
     // 댓글 수정
     void updateComment(CommentEntity commentEntity);
+
+    // 댓글 삭제
+    void deleteComment(Long commentId);
 }
