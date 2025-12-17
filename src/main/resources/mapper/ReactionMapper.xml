@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssook.mvc.repository.ReactionMapper">
+    <!-- 영상에 내가 단 댓글이 있는지 -->
+    <select id="existReaction" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM reaction
+            WHERE user_id = #{userId} AND video_id = #{videoId}
+        )
+    </select>
+
+    <!-- 좋아요 추가 -->
+    <insert id="insertReaction">
+        INSERT INTO reaction (user_id, video_id)
+        VALUES (#{userId}, #{videoId})
+    </insert>
+
+    <!-- 좋아요 삭제 -->
+    <delete id="deleteReaction">
+        DELETE FROM reaction
+        WHERE user_id = #{userId} AND video_id = #{videoId}
+    </delete>
+    
+    <!-- 좋아요 개수 조회 -->
+    <select id="countReaction" resultType="int">
+        SELECT COUNT(*)
+        FROM reaction
+        WHERE video_id = #{videoId}
+    </select>
+</mapper>
