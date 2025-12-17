@@ -1,6 +1,8 @@
 package com.ssook.mvc.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.ssook.mvc.dto.category.response.CategoryResponseDto;
 import com.ssook.mvc.dto.common.PageResponse;
 import com.ssook.mvc.entity.CategoryEntity;
 import com.ssook.mvc.repository.CategoryMapper;
+import com.ssook.mvc.repository.SubscriptionMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryService {
 
     private final CategoryMapper categoryMapper;
+    private final SubscriptionMapper subscriptionMapper;
 
     @Transactional(readOnly = true)
     public PageResponse<CategoryResponseDto> getCategoryList(int page, int size, Long userId) {
@@ -33,9 +37,21 @@ public class CategoryService {
                 .map(CategoryResponseDto::from)
                 .collect(Collectors.toList());
 
-        // 추후 Subscription 기능 구현 시, userId로 구독 여부 체크 로직 추가 예정
-        if (userId != null) {
-            // 여기에 로직 들어갈 자리
+        // 구독 여부 체크 로직
+        if (userId != null && !content.isEmpty()) {
+            // 내가 구독한 카테고리 ID 목록을 가져옴 (예: [1, 3, 5])
+            List<Integer> subscribedIds = subscriptionMapper.selectSubscribedCategoryIds(userId);
+            
+            // 비교하기 쉽게 Set으로 변환 (검색 속도 O(1))
+            // import java.util.Set; import java.util.HashSet;
+            Set<Integer> subscribedSet = new HashSet<>(subscribedIds); 
+
+            // 리스트를 돌면서 ID가 Set에 있으면 isSubscribed = true
+            for (CategoryResponseDto dto : content) {
+                if (subscribedSet.contains(dto.getCategoryId())) {
+                    dto.setIsSubscribed(true);
+                }
+            }
         }
 
         // 공통 페이징 객체에 담아 반환
@@ -56,8 +72,11 @@ public class CategoryService {
         // DTO 변환
         CategoryResponseDto dto = CategoryResponseDto.from(category);
 
-        // 나중에 여기에 구독 여부 체크 로직(Subscription) 추가
-        // if (userId != null) { ... }
+        // 상세 조회 시 구독 여부 체크
+        if (userId != null) {
+            boolean isSubscribed = subscriptionMapper.existsSubscription(userId, categoryId);
+            dto.setIsSubscribed(isSubscribed);
+        }
 
         return dto;
     }
