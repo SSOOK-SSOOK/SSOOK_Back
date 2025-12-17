@@ -42,7 +42,7 @@
         c.is_deleted AS isDeleted
         FROM comment c
         JOIN users u ON c.user_id = u.user_id
-        WHERE c.video_id = #{videoId} AND c.parentId IS NULL
+        WHERE c.video_id = #{videoId} AND c.parent_id IS NULL
         ORDER BY c.created_at
         LIMIT  #{limit} OFFSET #{offset}
     </select>

@@ -48,7 +48,7 @@ public class CommentController {
 
     // 댓글 목록 조회
     @GetMapping("/video/{videoId}/comment")
-    public ApiResponse<CommentResponseDto> getCommentList(
+    public ApiResponse<PageResponse<CommentResponseDto>> getCommentList(
             @PathVariable Long videoId,
             @RequestParam int page,
             @RequestParam int size,
@@ -58,7 +58,7 @@ public class CommentController {
 
         // 댓글 목록 가져오기
         PageResponse<CommentResponseDto> comments  = commentService.getCommentList(videoId, userId, page, size);
-        return null;
-//        return ApiResponse.success(comments);
+
+        return ApiResponse.success(comments);
     }
 }
