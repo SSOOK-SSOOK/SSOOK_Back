@@ -28,4 +28,7 @@ public interface CommentMapper {
 
     // 전체 부모 댓글 개수
     int countParentComments(Long videoId);
+
+    // 댓글 수정
+    void updateComment(CommentEntity commentEntity);
 }

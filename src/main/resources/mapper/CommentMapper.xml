@@ -72,4 +72,13 @@
         FROM comment
         WHERE video_id = #{videoId} AND parent_id IS NULL
     </select>
+
+    <!-- 댓글 수정 -->
+    <update id="updateComment" parameterType="CommentEntity">
+        UPDATE comment
+        SET
+            content = #{content},
+            updated_at = NOW()
+        WHERE comment_id = #{commentId}
+    </update>
 </mapper>
