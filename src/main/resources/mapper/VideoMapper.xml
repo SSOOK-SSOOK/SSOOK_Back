@@ -5,7 +5,8 @@
 <mapper namespace="com.ssook.mvc.repository.VideoMapper">
     <!-- 영상 목록 조회 -->
     <select id="selectVideoList" parameterType="VideoListRequestDto" resultType="VideoResponseDto">
-        SELECT v.video_id AS videoId, v.thumbnail_url AS thumbnailUrl, v.view_count AS viewCount
+        SELECT v.video_id AS videoId, v.thumbnail_url AS thumbnailUrl, v.view_count AS viewCount,
+        v.title AS title, v.video_url AS videoUrl
         FROM video v
         LEFT JOIN category c ON v.category_id = c.category_id
         WHERE 1=1
