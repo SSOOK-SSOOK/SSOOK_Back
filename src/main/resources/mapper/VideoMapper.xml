@@ -6,7 +6,8 @@
     <!-- 영상 목록 조회 -->
     <select id="selectVideoList" parameterType="VideoListRequestDto" resultType="VideoResponseDto">
         SELECT v.video_id AS videoId, v.thumbnail_url AS thumbnailUrl, v.view_count AS viewCount,
-        v.title AS title, v.video_url AS videoUrl
+        v.title AS title, v.video_url AS videoUrl,
+        (SELECT COUNT(*) FROM comment cm WHERE cm.video_id = v.video_id AND cm.is_deleted = false) AS commentCount
         FROM video v
         LEFT JOIN category c ON v.category_id = c.category_id
         WHERE 1=1
