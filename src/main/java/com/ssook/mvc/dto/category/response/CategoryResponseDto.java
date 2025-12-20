@@ -9,18 +9,20 @@ import lombok.Setter;
 @Builder
 public class CategoryResponseDto {
     private Integer categoryId;
+    private Integer parentId;
     private String name;
     private String imageUrl;
     private String description;
-    
+
     @Setter
-    private Boolean isSubscribed; 
+    private Boolean isSubscribed;
 
     public static CategoryResponseDto from(CategoryEntity entity) {
         return CategoryResponseDto.builder()
                 .categoryId(entity.getCategoryId())
+                .parentId(entity.getParentId())
                 .name(entity.getCategoryName())
-                .imageUrl(entity.getImageUrl()) 
+                .imageUrl(entity.getImageUrl())
                 .description(entity.getDescription())
                 .isSubscribed(false) // 기본값 false (구독 구현 전)
                 .build();
