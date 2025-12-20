@@ -14,6 +14,7 @@ public class CommentResponseDto {
     private String content; // 댓글 내용
     private String nickname; // 댓글 단 유저의 닉네임
     private LocalDateTime createdAt; // 댓글 달린 시간
+    private LocalDateTime updatedAt; // 수정된 시간
 
     private boolean isMyComment; // 내 댓글인지 여부
     private boolean isDeleted; // 삭제된 댓글인지 여부

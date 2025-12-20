@@ -9,4 +9,5 @@ public class VideoResponseDto {
     private String videoUrl;
     private String thumbnailUrl;
     private Integer viewCount;
+    private Integer commentCount;
 }

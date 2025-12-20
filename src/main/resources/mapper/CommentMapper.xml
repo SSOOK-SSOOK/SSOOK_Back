@@ -42,7 +42,7 @@
         c.is_deleted AS isDeleted
         FROM comment c
         JOIN users u ON c.user_id = u.user_id
-        WHERE c.video_id = #{videoId} AND c.parent_id IS NULL
+        WHERE c.video_id = #{videoId} AND c.parent_id IS NULL AND c.is_deleted = false
         ORDER BY c.created_at
         LIMIT  #{limit} OFFSET #{offset}
     </select>
@@ -63,6 +63,7 @@
         <foreach item="id" collection="parentIds" open="(" separator="," close=")">
             #{id}
         </foreach>
+        AND c.is_deleted = false
         ORDER BY c.created_at
     </select>
 
@@ -70,7 +71,7 @@
     <select id="countParentComments" resultType="int">
         SELECT COUNT(*)
         FROM comment
-        WHERE video_id = #{videoId} AND parent_id IS NULL
+        WHERE video_id = #{videoId} AND parent_id IS NULL AND is_deleted = false
     </select>
 
     <!-- 댓글 수정 -->
