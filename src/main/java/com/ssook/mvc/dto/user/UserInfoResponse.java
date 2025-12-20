@@ -9,7 +9,8 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class UserInfoResponse {
-    
+
+    private Long userId;
     private String email;
     private String nickname;
     private String intro;
@@ -18,6 +19,7 @@ public class UserInfoResponse {
     // Entity -> DTO 변환 메서드 (편의상 여기에 만듦)
     public static UserInfoResponse from(UserEntity user) {
         return UserInfoResponse.builder()
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .intro(user.getIntro())
