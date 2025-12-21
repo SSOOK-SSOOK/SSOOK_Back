@@ -33,14 +33,14 @@ public class CleanBotService {
         String url = "https://gms.ssafy.io/gmsapi/api.openai.com/v1/chat/completions";
 
         try {
-            // [Step 1] DTO 객체 생성 (편의 생성자 사용)
+            // DTO 객체 생성 (편의 생성자 사용)
             CleanBotRequest requestDto = new CleanBotRequest(model,
                     "다음 댓글이 욕설, 비하, 혐오 표현을 포함하고 있는지 분석해줘. 유해하면 'BAD', 안전하면 'GOOD'이라고만 답해.\n\n댓글 내용: " + content);
 
-            // [Step 2] DTO -> JSON 문자열 변환 (직렬화)
+            // DTO -> JSON 문자열 변환 (직렬화)
             String jsonBody = objectMapper.writeValueAsString(requestDto);
 
-            // [Step 3] OkHttp 요청 객체 생성
+            // OkHttp 요청 객체 생성
             RequestBody body = RequestBody.create(jsonBody, MediaType.get("application/json; charset=utf-8"));
             Request request = new Request.Builder()
                     .url(url)
@@ -49,14 +49,16 @@ public class CleanBotService {
                     .addHeader("Content-Type", "application/json")
                     .build();
 
-            // [Step 4] 요청 전송 및 응답 처리
+            // 요청 전송 및 응답 처리
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     // JSON -> DTO 변환 (역직렬화)
-                    CleanBotResponse responseDto = objectMapper.readValue(response.body().string(), CleanBotResponse.class);
+                    CleanBotResponse responseDto = objectMapper.readValue(response.body().string(),
+                            CleanBotResponse.class);
 
                     // 결과 추출
-                    if (responseDto != null && responseDto.getChoices() != null && !responseDto.getChoices().isEmpty()) {
+                    if (responseDto != null && responseDto.getChoices() != null
+                            && !responseDto.getChoices().isEmpty()) {
                         String result = responseDto.getChoices().get(0).getMessage().getContent();
                         return !"GOOD".equalsIgnoreCase(result != null ? result.trim() : "");
                     }

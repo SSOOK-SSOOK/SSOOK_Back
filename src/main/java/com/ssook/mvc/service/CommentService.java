@@ -87,7 +87,7 @@ public class CommentService {
         int totalCount = commentMapper.countParentComments(videoId);
 
         // 부모 댓글이 없을 경우 빈 리스트 반환
-        if(parents.isEmpty())
+        if (parents.isEmpty())
             return new PageResponse<>(Collections.emptyList(), page, size, totalCount);
 
         // 부모 댓글의 Id 추출해서 List로 변환
@@ -103,12 +103,12 @@ public class CommentService {
                 .collect(Collectors.groupingBy(CommentResponseDto::getParentId));
 
         // 부모 댓글에 대댓글 매핑 및 내 댓글인지 확인
-        for(CommentResponseDto parent : parents) {
+        for (CommentResponseDto parent : parents) {
             List<CommentResponseDto> children = replyMap.getOrDefault(parent.getCommentId(), Collections.emptyList());
             parent.setReplies(children);
             checkIsMyComment(parent, userId);
 
-            for(CommentResponseDto child : children)
+            for (CommentResponseDto child : children)
                 checkIsMyComment(child, userId);
         }
 
@@ -128,6 +128,11 @@ public class CommentService {
         // 2. 작성자 본인 확인
         if (!isExistingComment.getUserId().equals(userId)) {
             throw new IllegalArgumentException("본인의 댓글만 수정할 수 있습니다.");
+        }
+
+        // 3. AI 클린봇 검사
+        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+            throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
         }
 
         // 3. 댓글 업데이트
