@@ -21,7 +21,13 @@ public class VideoController {
 
     // 영상 목록 조회
     @GetMapping
-    public ApiResponse<Map<String, Object>> getVideoList(@ModelAttribute VideoListRequestDto videoListRequestDto) {
+    public ApiResponse<Map<String, Object>> getVideoList(@ModelAttribute VideoListRequestDto videoListRequestDto,
+            HttpServletRequest request) {
+        // request에서 userId 꺼내기 (로그인 안했으면 null일 수 있음 -> 필터 확인 필요하나 보통 getAttribute는 null
+        // 가능)
+        Long userId = (Long) request.getAttribute("userId");
+        videoListRequestDto.setUserId(userId);
+
         // 서비스 호출로 영상 목록 가져와서 videos에 할당
         List<VideoResponseDto> videos = videoService.getVideoList(videoListRequestDto);
         // Map에 videos넣기

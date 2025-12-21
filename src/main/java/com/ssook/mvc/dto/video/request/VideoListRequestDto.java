@@ -45,4 +45,6 @@ public class VideoListRequestDto {
     public void setSize(int size) {
         this.size = size;
     }
+
+    private Long userId; // 내 좋아요 여부 확인용
 }
