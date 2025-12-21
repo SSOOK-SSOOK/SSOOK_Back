@@ -18,10 +18,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentMapper commentMapper;
+    private final CleanBotService cleanBotService;
 
     // 댓글 작성
     @Transactional
     public CommentResponseDto addComment(Long videoId, Long userId, CommentRequestDto commentRequestDto) {
+
+        // AI 클린봇 검사
+        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+            throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
+        }
+
         // CommentEntity 생성
         CommentEntity commentEntity = CommentEntity.builder()
                 .videoId(videoId)
@@ -39,6 +46,12 @@ public class CommentService {
     // 대댓글 작성
     @Transactional
     public CommentResponseDto addReply(Long parentId, Long userId, CommentRequestDto commentRequestDto) {
+
+        // AI 클린봇 검사
+        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+            throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
+        }
+
         // 부모 댓글의 videoId 조회
         Long videoId = commentMapper.findVideoIdByCommentId(parentId);
         // 영상이 없을 경우 예외 발생
