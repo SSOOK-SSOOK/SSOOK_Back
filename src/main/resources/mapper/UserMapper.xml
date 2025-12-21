@@ -11,6 +11,7 @@
             nickname, 
             role, 
             intro,
+            profile_image,
             created_at,
             updated_at
         ) VALUES (
@@ -19,6 +20,7 @@
             #{nickname}, 
             #{role}, 
             #{intro},
+            #{profileImage},
             NOW(),
             NOW()
         )
@@ -45,6 +47,7 @@
     SET 
         nickname = #{nickname},
         intro = #{intro},
+        profile_image = #{profileImage},
         updated_at = NOW()
     WHERE user_id = #{userId}
 	</update>

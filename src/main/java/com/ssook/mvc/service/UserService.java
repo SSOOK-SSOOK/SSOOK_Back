@@ -1,5 +1,6 @@
 package com.ssook.mvc.service;
 
+import com.ssook.mvc.enums.UserProfile;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,8 @@ import com.ssook.mvc.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -21,6 +24,12 @@ public class UserService {
 	private final JwtUtil jwtUtil; // JwtUtil 주입 (RequiredArgsConstructor 덕분에 자동 주입됨)
 	
     private final UserMapper userMapper;
+
+    // 프론트에서 보여줄 이미지 목록
+    @Transactional
+    public List<String> getProfileImages() {
+        return UserProfile.getAllUrls();
+    }
 
     @Transactional
     public void signup(UserJoinRequest request) {
@@ -91,8 +100,21 @@ public class UserService {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
+        // --- 프로필 이미지 처리 로직 ---
+        String newProfileImage = request.getProfileImage();
+
+        // 1. 요청에 이미지가 포함되어 있다면 -> 유효한지(Enum에 있는지) 확인
+        if (newProfileImage != null && !newProfileImage.isEmpty()) {
+            if (!UserProfile.isValidUrl(newProfileImage)) {
+                throw new IllegalArgumentException("유효하지 않은 프로필 이미지입니다.");
+            }
+        } else {
+            // 2. 요청에 이미지가 없으면 -> 기존 이미지 유지
+            newProfileImage = user.getProfileImage();
+        }
+
         // Entity 내용 변경 (아까 만든 modify 메서드 사용)
-        user.modify(request.getNickname(), request.getIntro());
+        user.modify(request.getNickname(), request.getIntro(), newProfileImage);
 
         // DB 업데이트 실행
         userMapper.updateUser(user);

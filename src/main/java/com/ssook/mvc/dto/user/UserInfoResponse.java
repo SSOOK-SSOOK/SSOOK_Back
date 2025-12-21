@@ -15,6 +15,7 @@ public class UserInfoResponse {
     private String nickname;
     private String intro;
     private String role;
+    private String profileImage;
 
     // Entity -> DTO 변환 메서드 (편의상 여기에 만듦)
     public static UserInfoResponse from(UserEntity user) {
@@ -24,6 +25,7 @@ public class UserInfoResponse {
                 .nickname(user.getNickname())
                 .intro(user.getIntro())
                 .role(user.getRole())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 }

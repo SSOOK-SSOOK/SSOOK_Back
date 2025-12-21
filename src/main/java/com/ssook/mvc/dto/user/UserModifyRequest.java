@@ -14,4 +14,7 @@ public class UserModifyRequest {
     private String nickname;
     
     private String intro; // 한줄 소개는 비어있어도 됨 (NotBlank 안 붙임)
+
+    // 변경할 이미지 경로 (예: "/images/profile/profile3.png")
+    private String profileImage;
 }
