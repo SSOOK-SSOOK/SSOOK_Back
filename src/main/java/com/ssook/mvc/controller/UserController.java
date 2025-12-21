@@ -21,6 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -99,5 +101,11 @@ public class UserController {
         // 성공 응답
         return ApiResponse.createSuccess("회원 탈퇴가 완료되었습니다.");
     }
-    
+
+    // 프로필 이미지 조회
+    @GetMapping("/profile-images")
+    public ApiResponse<List<String>> getProfileImages() {
+        // ["/images/profile/profile1.png", "/images/profile/profile2.png", ...] 리스트 반환
+        return ApiResponse.success(userService.getProfileImages());
+    }
 }

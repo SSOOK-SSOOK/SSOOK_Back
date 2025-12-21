@@ -1,6 +1,7 @@
 package com.ssook.mvc.dto.user;
 
 import com.ssook.mvc.entity.UserEntity;
+import com.ssook.mvc.enums.UserProfile;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -33,6 +34,7 @@ public class UserJoinRequest {
                 .nickname(this.nickname)
                 .role("ROLE_USER")
                 .intro(this.intro)
+                .profileImage(UserProfile.DEFAULT.getUrl()) // 기본 이미지 설정
                 .build();
     }
 }
