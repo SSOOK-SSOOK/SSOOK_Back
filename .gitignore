@@ -38,3 +38,6 @@ $RECYCLE.BIN/
 *.log
 .idea/
 *.iml
+
+### Secret Config ###
+src/main/resources/application.properties
