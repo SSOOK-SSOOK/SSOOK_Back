@@ -10,4 +10,6 @@ public class VideoResponseDto {
     private String thumbnailUrl;
     private Integer viewCount;
     private Integer commentCount;
+    private boolean liked;
+    private Integer likeCount;
 }

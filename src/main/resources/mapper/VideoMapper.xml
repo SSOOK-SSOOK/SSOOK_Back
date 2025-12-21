@@ -7,9 +7,12 @@
     <select id="selectVideoList" parameterType="VideoListRequestDto" resultType="VideoResponseDto">
         SELECT v.video_id AS videoId, v.thumbnail_url AS thumbnailUrl, v.view_count AS viewCount,
         v.title AS title, v.video_url AS videoUrl,
-        (SELECT COUNT(*) FROM comment cm WHERE cm.video_id = v.video_id AND cm.is_deleted = false) AS commentCount
+        (SELECT COUNT(*) FROM comment cm WHERE cm.video_id = v.video_id AND cm.is_deleted = false) AS commentCount,
+        (SELECT COUNT(*) FROM reaction r WHERE r.video_id = v.video_id) AS likeCount,
+        (my_reaction.reaction_id IS NOT NULL) AS liked
         FROM video v
         LEFT JOIN category c ON v.category_id = c.category_id
+        LEFT JOIN reaction my_reaction ON v.video_id = my_reaction.video_id AND my_reaction.user_id = #{userId}
         WHERE 1=1
 
         <if test="categoryName != null and categoryName != ''">
