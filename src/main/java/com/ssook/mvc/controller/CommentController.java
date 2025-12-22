@@ -19,8 +19,7 @@ public class CommentController {
     public ApiResponse<CommentResponseDto> createComment(
             @PathVariable("video_id") Long videoId,
             @RequestBody CommentRequestDto commentRequestDto,
-            HttpServletRequest request
-            ) {
+            HttpServletRequest request) {
         // request에서 userId 꺼내기
         Long userId = (Long) request.getAttribute("userId");
 
@@ -35,8 +34,7 @@ public class CommentController {
     public ApiResponse<CommentResponseDto> createReply(
             @PathVariable("comment_id") Long commentId,
             @RequestBody CommentRequestDto commentRequestDto,
-            HttpServletRequest request
-            ) {
+            HttpServletRequest request) {
         // request에서 userId 꺼내기
         Long userId = (Long) request.getAttribute("userId");
 
@@ -57,7 +55,7 @@ public class CommentController {
         Long userId = (Long) request.getAttribute("userId");
 
         // 댓글 목록 가져오기
-        PageResponse<CommentResponseDto> comments  = commentService.getCommentList(videoId, userId, page, size);
+        PageResponse<CommentResponseDto> comments = commentService.getCommentList(videoId, userId, page, size);
 
         return ApiResponse.success(comments);
     }
@@ -67,8 +65,7 @@ public class CommentController {
     public ApiResponse<Object> modifyComment(
             @PathVariable Long commentId,
             @RequestBody CommentRequestDto commentRequestDto,
-            HttpServletRequest request
-    ) {
+            HttpServletRequest request) {
         // request에서 userId 꺼내기
         Long userId = (Long) request.getAttribute("userId");
 

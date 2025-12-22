@@ -13,6 +13,7 @@ public class CommentResponseDto {
     private Long userId; // 본인확인용 userId(조회기능 만들면서 추가함)
     private String content; // 댓글 내용
     private String nickname; // 댓글 단 유저의 닉네임
+    private String profileImage; // 댓글 단 유저의 프로필 이미지
     private LocalDateTime createdAt; // 댓글 달린 시간
     private LocalDateTime updatedAt; // 수정된 시간
 

@@ -17,6 +17,7 @@
             c.user_id AS userId,
             c.content AS content,
             u.nickname AS nickname,
+            u.profile_image AS profileImage,
             c.created_at AS createdAt,
             c.is_deleted AS isDeleted
         FROM comment c
@@ -38,6 +39,7 @@
         c.user_id AS userId,
         c.content AS content,
         u.nickname AS nickname,
+        u.profile_image AS profileImage,
         c.created_at AS createdAt,
         c.is_deleted AS isDeleted
         FROM comment c
@@ -55,6 +57,7 @@
         c.user_id AS userId,
         c.content AS content,
         u.nickname AS nickname,
+        u.profile_image AS profileImage,
         c.created_at AS createdAt,
         c.is_deleted AS isDeleted
         FROM comment c
