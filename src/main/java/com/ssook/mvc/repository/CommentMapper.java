@@ -20,8 +20,8 @@ public interface CommentMapper {
 
     // 부모 댓글 목록 조회
     List<CommentResponseDto> selectParentComments(@Param("videoId") Long videoId,
-                                                  @Param("limit") int limit,
-                                                  @Param("offset") int offset);
+            @Param("limit") int limit,
+            @Param("offset") int offset);
 
     // 부모 댓글의 대댓글 목록 조회
     List<CommentResponseDto> selectRepliesByParentIds(@Param("parentIds") List<Long> parentIds);
