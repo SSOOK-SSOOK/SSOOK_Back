@@ -24,27 +24,31 @@ public class CategoryController {
     @GetMapping
     public ApiResponse<PageResponse<CategoryResponseDto>> getCategoryList(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int perPage, 
+            @RequestParam(defaultValue = "10") int perPage,
+            @RequestParam(required = false) String keyword,
             HttpServletRequest request) {
-        
+
         // 인터셉터가 넣어준 userId 꺼내기 (비로그인 시 null일 수 있음)
         Long userId = (Long) request.getAttribute("userId");
-        
-        PageResponse<CategoryResponseDto> response = categoryService.getCategoryList(page, perPage, userId);
-        
+
+        PageResponse<CategoryResponseDto> response = categoryService.getCategoryList(page, perPage, userId, keyword);
+
         return ApiResponse.success(response);
     }
-    
+
     @GetMapping("/{categoryId}")
-    public ApiResponse<CategoryResponseDto> getCategoryDetail(
+    public ApiResponse<Object> getCategoryDetail(
             @PathVariable Integer categoryId,
             HttpServletRequest request) {
-        
-        // 상세 조회에서도 '내가 구독했는지' 보여줘야 하므로 userId를 꺼냅니다.
-        Long userId = (Long) request.getAttribute("userId");
-        
-        CategoryResponseDto response = categoryService.getCategoryDetail(categoryId, userId);
-        
-        return ApiResponse.success(response);
+
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            CategoryResponseDto response = categoryService.getCategoryDetail(categoryId, userId);
+
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ApiResponse<>(500, e.toString(), null);
+        }
     }
 }

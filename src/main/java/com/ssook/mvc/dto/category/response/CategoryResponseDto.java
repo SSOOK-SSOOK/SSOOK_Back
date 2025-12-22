@@ -13,6 +13,10 @@ public class CategoryResponseDto {
     private String name;
     private String imageUrl;
     private String description;
+    private Boolean hasChildren;
+
+    @Setter
+    private java.util.List<CategoryResponseDto> children;
 
     @Setter
     private Boolean isSubscribed;
@@ -24,6 +28,7 @@ public class CategoryResponseDto {
                 .name(entity.getCategoryName())
                 .imageUrl(entity.getImageUrl())
                 .description(entity.getDescription())
+                .hasChildren(entity.isHasChildren())
                 .isSubscribed(false) // 기본값 false (구독 구현 전)
                 .build();
     }

@@ -5,18 +5,38 @@
 <mapper namespace="com.ssook.mvc.repository.CategoryMapper">
     
     <select id="selectCategoryList" resultType="com.ssook.mvc.entity.CategoryEntity">
-        SELECT * FROM category
-        ORDER BY category_id ASC
+        SELECT c.*, 
+        (SELECT COUNT(*) FROM category child WHERE child.parent_id = c.category_id) > 0 AS hasChildren
+        FROM category c
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (c.category_name LIKE CONCAT('%', #{keyword}, '%') OR c.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY c.category_id ASC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="countCategory" resultType="int">
         SELECT COUNT(*) FROM category
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (category_name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
     </select>
     
-    <select id="selectCategoryById" parameterType="int" resultType="com.ssook.mvc.entity.CategoryEntity">
-    SELECT * FROM category 
-    WHERE category_id = #{categoryId}
-</select>
+    <select id="selectCategoryById" resultType="com.ssook.mvc.entity.CategoryEntity">
+        SELECT c.*, 
+        (SELECT COUNT(*) FROM category child WHERE child.parent_id = c.category_id) > 0 AS hasChildren
+        FROM category c 
+        WHERE c.category_id = #{categoryId}
+    </select>
+
+    <select id="selectCategoryChildren" resultType="com.ssook.mvc.entity.CategoryEntity">
+        SELECT c.*, 
+        (SELECT COUNT(*) FROM category child WHERE child.parent_id = c.category_id) > 0 AS hasChildren
+        FROM category c
+        WHERE c.parent_id = #{parentId}
+        ORDER BY c.category_id ASC
+    </select>
     
 </mapper>
