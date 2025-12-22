@@ -15,37 +15,6 @@ public class VideoListRequestDto {
         return (page - 1) * size;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public Integer getSortedType() {
-        return sortedType;
-    }
-
-    public void setSortedType(Integer sortedType) {
-        this.sortedType = sortedType;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
-    }
-
     private Long userId; // 내 좋아요 여부 확인용
+    private Long likedUserId; // 해당 유저가 좋아요한 영상만 가져오기 위함
 }

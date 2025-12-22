@@ -13,6 +13,13 @@
         FROM video v
         LEFT JOIN category c ON v.category_id = c.category_id
         LEFT JOIN reaction my_reaction ON v.video_id = my_reaction.video_id AND my_reaction.user_id = #{userId}
+
+        <if test="likedUserId != null">
+            INNER JOIN reaction r_filter
+            ON v.video_id = r_filter.video_id
+            AND r_filter.user_id = #{likedUserId}
+        </if>
+
         WHERE 1=1
 
         <if test="categoryName != null and categoryName != ''">
@@ -26,6 +33,9 @@
         <choose>
             <when test="sortedType == 2">
                 v.view_count DESC, v.created_at DESC
+            </when>
+            <when test="likedUserId != null">
+                r_filter.created_at DESC
             </when>
             <otherwise>
                 v.created_at DESC
