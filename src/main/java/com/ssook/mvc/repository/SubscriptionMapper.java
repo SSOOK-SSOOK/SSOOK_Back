@@ -18,5 +18,5 @@ public interface SubscriptionMapper {
     boolean existsSubscription(@Param("userId") Long userId, @Param("categoryId") Integer categoryId);
 
     // 내가 구독한 카테고리 ID 목록 조회 (CategoryService에서 사용 예정)
-    List<Integer> selectSubscribedCategoryIds(Long userId);
+    List<Integer> selectSubscribedCategoryIds(@Param("userId") Long userId);
 }
