@@ -48,4 +48,27 @@ public class VideoController {
 
         return ApiResponse.success(videoDetail);
     }
+
+    // 내가 좋아요한 영상 모아보기
+    @GetMapping("/my-likes")
+    public ApiResponse<Map<String, Object>> getMyLikedVideos(
+            @ModelAttribute VideoListRequestDto requestDto,
+            HttpServletRequest request
+    ) {
+        // 1. Interceptor에서 검증 후 넣어준 userId 꺼내기
+        Long userId = (Long) request.getAttribute("userId");
+
+        // 2. DTO 설정
+        requestDto.setUserId(userId);       // 영상마다 내가 좋아요 눌렀는지 확인용
+        requestDto.setLikedUserId(userId);  // 이 유저가 좋아요한 영상만 필터링해서 가져옴
+
+        // 3. Service 호출 (기존 목록 조회 로직 재사용)
+        List<VideoResponseDto> likedVideos = videoService.getVideoList(requestDto);
+
+        // 4. 응답 포맷 통일 (기존 getVideoList와 동일하게 "videos" 키에 담아서 리턴)
+        Map<String, Object> data = new HashMap<>();
+        data.put("videos", likedVideos);
+
+        return ApiResponse.success(data);
+    }
 }
