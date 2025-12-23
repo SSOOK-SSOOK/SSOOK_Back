@@ -19,6 +19,12 @@
             ON v.video_id = r_filter.video_id
             AND r_filter.user_id = #{likedUserId}
         </if>
+        
+        <if test="onlySubscribed == true and userId != null">
+            INNER JOIN subscription sub
+            ON v.category_id = sub.category_id
+            AND sub.user_id = #{userId}
+        </if>
 
         WHERE 1=1
 
@@ -28,11 +34,17 @@
         <if test="categoryId != null">
             AND v.category_id = #{categoryId}
         </if>
+        <if test="keyword != null and keyword != ''">
+            AND v.title LIKE CONCAT('%', #{keyword}, '%')
+        </if>
 
         ORDER BY
         <choose>
             <when test="sortedType == 2">
                 v.view_count DESC, v.created_at DESC
+            </when>
+            <when test="sortedType == 3">
+                (SELECT COUNT(*) FROM reaction r WHERE r.video_id = v.video_id) DESC, v.created_at DESC
             </when>
             <when test="likedUserId != null">
                 r_filter.created_at DESC

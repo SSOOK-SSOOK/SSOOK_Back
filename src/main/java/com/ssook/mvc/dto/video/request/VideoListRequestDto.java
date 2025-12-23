@@ -17,4 +17,8 @@ public class VideoListRequestDto {
 
     private Long userId; // 내 좋아요 여부 확인용
     private Long likedUserId; // 해당 유저가 좋아요한 영상만 가져오기 위함
+
+    private String keyword; // 검색어 (영상 제목)
+
+    private Boolean onlySubscribed; // 구독한 카테고리 영상만 보기
 }
