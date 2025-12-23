@@ -63,7 +63,8 @@ public class AiService {
                         return responseDto.getChoices().get(0).getMessage().getContent();
                     }
                 } else {
-                    log.error("AI 요청 실패: code={}, body={}", response.code(), response.body() != null ? response.body().string() : "null");
+                    log.error("AI 요청 실패: code={}, body={}", response.code(),
+                            response.body() != null ? response.body().string() : "null");
                 }
             }
         } catch (IOException e) {
@@ -79,11 +80,11 @@ public class AiService {
     public List<QuizResponseDto> generateQuiz(String keyword) {
         String prompt = String.format(
                 "주제 '%s'에 대한 초보자 수준의 객관식 퀴즈 3개를 만들어줘. " +
+                        "정답(answer)은 0~3 사이의 인덱스여야 히고, answerText는 그 인덱스에 해당하는 보기를 그대로 적어. " +
                         "반드시 아래 JSON 포맷을 지켜서 배열로 반환해. 다른 말은 하지 마. " +
                         "JSON 예시: " +
-                        "[{\"question\":\"문제내용\", \"options\":[\"보기1\",\"보기2\",\"보기3\",\"보기4\"], \"answerIndex\":0, \"explanation\":\"해설\"}]",
-                keyword
-        );
+                        "[{\"question\":\"문제내용\", \"options\":[\"보기1\",\"보기2\",\"보기3\",\"보기4\"], \"answer\":2, \"answerText\":\"보기3\", \"explanation\":\"해설\"}]",
+                keyword);
 
         String content = callOpenAiApi(prompt);
 
@@ -95,7 +96,27 @@ public class AiService {
 
                 if (firstIndex != -1 && lastIndex != -1) {
                     content = content.substring(firstIndex, lastIndex + 1);
-                    return objectMapper.readValue(content, new TypeReference<>() {});
+                    List<QuizResponseDto> quizzes = objectMapper.readValue(content, new TypeReference<>() {
+                    });
+
+                    // 검증 로직: answerText를 기반으로 answer 인덱스 재설정
+                    for (QuizResponseDto quiz : quizzes) {
+                        if (quiz.getAnswerText() != null && quiz.getOptions() != null) {
+                            int correctIdx = -1;
+                            for (int i = 0; i < quiz.getOptions().size(); i++) {
+                                // 텍스트 비교 (공백 제거 후)
+                                if (quiz.getOptions().get(i).trim().equalsIgnoreCase(quiz.getAnswerText().trim())) {
+                                    correctIdx = i;
+                                    break;
+                                }
+                            }
+                            // 텍스트가 일치하는 보기가 있으면 그 인덱스로 덮어씌움
+                            if (correctIdx != -1) {
+                                quiz.setAnswer(correctIdx);
+                            }
+                        }
+                    }
+                    return quizzes;
                 } else {
                     log.warn("AI 응답에서 JSON 배열을 찾을 수 없습니다: {}", content);
                 }
