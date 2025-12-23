@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CommentService {
     private final CommentMapper commentMapper;
-    private final CleanBotService cleanBotService;
+    private final AiService aiService;
 
     // 댓글 작성
     @Transactional
     public CommentResponseDto addComment(Long videoId, Long userId, CommentRequestDto commentRequestDto) {
 
         // AI 클린봇 검사
-        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+        if (aiService.isToxicComment(commentRequestDto.getContent())) {
             throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
         }
 
@@ -48,7 +48,7 @@ public class CommentService {
     public CommentResponseDto addReply(Long parentId, Long userId, CommentRequestDto commentRequestDto) {
 
         // AI 클린봇 검사
-        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+        if (aiService.isToxicComment(commentRequestDto.getContent())) {
             throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
         }
 
@@ -131,7 +131,7 @@ public class CommentService {
         }
 
         // 3. AI 클린봇 검사
-        if (cleanBotService.isSafeComment(commentRequestDto.getContent())) {
+        if (aiService.isToxicComment(commentRequestDto.getContent())) {
             throw new IllegalArgumentException("AI 클린봇: 욕설이나 부적절한 내용이 감지되었습니다.");
         }
 
