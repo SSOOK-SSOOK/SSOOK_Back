@@ -75,4 +75,33 @@
         SET view_count = view_count + 1
         WHERE video_id = #{videoId}
     </update>
+
+    <!-- 시청 기록 저장 -->
+    <insert id="insertViewHistory" parameterType="map">
+        INSERT INTO video_view_history (user_id, video_id, category_id)
+        VALUES (#{userId}, #{videoId}, #{categoryId})
+    </insert>
+
+    <!-- 사용자 통계용 시청 기록 조회 (최근 1년 치) -->
+    <select id="selectViewHistory" resultType="map">
+        SELECT 
+            DATE(created_at) as viewDate,
+            HOUR(created_at) as viewHour,
+            category_id as categoryId
+        FROM video_view_history
+        WHERE user_id = #{userId}
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 최애 카테고리 조회 (ID가 아닌 이름 반환) -->
+    <select id="selectTopCategory" resultType="string">
+        SELECT c.category_name
+        FROM video_view_history h
+        JOIN category c ON h.category_id = c.category_id
+        WHERE h.user_id = #{userId}
+        GROUP BY h.category_id
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+    </select>
 </mapper>
