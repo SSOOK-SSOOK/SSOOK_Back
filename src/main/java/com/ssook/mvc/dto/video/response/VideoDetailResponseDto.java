@@ -14,4 +14,5 @@ public class VideoDetailResponseDto {
     private Integer likeCount; // 좋아요 수
     private Integer commentCount; // 댓글 수
     private Integer viewCount; // 조회수
+    private Integer categoryId; // 카테고리 ID (통계용)
 }

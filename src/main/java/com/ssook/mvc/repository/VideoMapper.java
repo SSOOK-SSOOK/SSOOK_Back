@@ -18,4 +18,13 @@ public interface VideoMapper {
 
     // 조회수 증가
     void increaseViewCount(Long videoId);
+
+    // 시청 기록 저장
+    void insertViewHistory(java.util.Map<String, Object> map);
+
+    // 시청 기록 조회
+    List<java.util.Map<String, Object>> selectViewHistory(Long userId);
+
+    // 최애 카테고리 조회
+    String selectTopCategory(Long userId);
 }
