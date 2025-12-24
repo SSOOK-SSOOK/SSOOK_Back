@@ -46,6 +46,9 @@
             <when test="sortedType == 3">
                 (SELECT COUNT(*) FROM reaction r WHERE r.video_id = v.video_id) DESC, v.created_at DESC
             </when>
+            <when test="sortedType == 4">
+                RAND()
+            </when>
             <when test="likedUserId != null">
                 r_filter.created_at DESC
             </when>
@@ -104,5 +107,21 @@
         GROUP BY h.category_id
         ORDER BY COUNT(*) DESC
         LIMIT 1
+    </select>
+
+    <!-- 실시간 급상승 영상 조회 (최근 24시간 조회수 기준) -->
+    <select id="selectTrendingVideos" resultType="VideoResponseDto">
+        SELECT v.video_id AS videoId, v.thumbnail_url AS thumbnailUrl, v.view_count AS viewCount,
+               v.title AS title, v.video_url AS videoUrl,
+               (SELECT COUNT(*) FROM comment cm WHERE cm.video_id = v.video_id AND cm.is_deleted = false) AS commentCount,
+               (SELECT COUNT(*) FROM reaction r WHERE r.video_id = v.video_id) AS likeCount,
+               (SELECT COUNT(*) FROM reaction my_r WHERE my_r.video_id = v.video_id AND my_r.user_id = #{userId}) > 0 AS liked,
+               COUNT(h.history_id) as recentViewCount
+        FROM video v
+        JOIN video_view_history h ON v.video_id = h.video_id
+        WHERE h.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+        GROUP BY v.video_id
+        ORDER BY recentViewCount DESC, v.view_count DESC
+        LIMIT 3
     </select>
 </mapper>

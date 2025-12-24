@@ -51,6 +51,14 @@
         updated_at = NOW()
     WHERE user_id = #{userId}
 	</update>
+
+    <update id="updatePassword" parameterType="com.ssook.mvc.entity.UserEntity">
+    UPDATE users
+    SET
+        password = #{password},
+        updated_at = NOW()
+    WHERE user_id = #{userId}
+    </update>
 	
 	<delete id="deleteUser" parameterType="long">
     DELETE FROM users WHERE user_id = #{userId}

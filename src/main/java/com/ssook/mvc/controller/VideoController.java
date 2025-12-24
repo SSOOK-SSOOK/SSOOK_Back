@@ -53,14 +53,13 @@ public class VideoController {
     @GetMapping("/my-likes")
     public ApiResponse<Map<String, Object>> getMyLikedVideos(
             @ModelAttribute VideoListRequestDto requestDto,
-            HttpServletRequest request
-    ) {
+            HttpServletRequest request) {
         // 1. Interceptor에서 검증 후 넣어준 userId 꺼내기
         Long userId = (Long) request.getAttribute("userId");
 
         // 2. DTO 설정
-        requestDto.setUserId(userId);       // 영상마다 내가 좋아요 눌렀는지 확인용
-        requestDto.setLikedUserId(userId);  // 이 유저가 좋아요한 영상만 필터링해서 가져옴
+        requestDto.setUserId(userId); // 영상마다 내가 좋아요 눌렀는지 확인용
+        requestDto.setLikedUserId(userId); // 이 유저가 좋아요한 영상만 필터링해서 가져옴
 
         // 3. Service 호출 (기존 목록 조회 로직 재사용)
         List<VideoResponseDto> likedVideos = videoService.getVideoList(requestDto);
@@ -69,6 +68,17 @@ public class VideoController {
         Map<String, Object> data = new HashMap<>();
         data.put("videos", likedVideos);
 
+        return ApiResponse.success(data);
+    }
+
+    // 실시간 급상승 영상 조회
+    @GetMapping("/trending")
+    public ApiResponse<Map<String, Object>> getTrendingVideos(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        List<VideoResponseDto> trendingVideos = videoService.getTrendingVideos(userId);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("videos", trendingVideos);
         return ApiResponse.success(data);
     }
 }

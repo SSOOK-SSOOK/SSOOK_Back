@@ -179,4 +179,43 @@ public class VideoService {
                 .watchTime(totalViewCount) // 1분으로 가정
                 .build();
     }
+
+    // 급상승 영상 조회 (Trend)
+    @Transactional(readOnly = true)
+    public List<VideoResponseDto> getTrendingVideos(Long userId) {
+        // 1. 최근 24시간 조회수 높은 영상 3개 조회
+        List<VideoResponseDto> trending = videoMapper.selectTrendingVideos(userId);
+
+        // 2. 만약 3개 미만이라면, 전체 인기순으로 채우기 (중복 제거)
+        if (trending.size() < 3) {
+            VideoListRequestDto fallbackRequest = new VideoListRequestDto();
+            fallbackRequest.setSortedType(2); // 조회수 순
+            fallbackRequest.setPage(1);
+            fallbackRequest.setSize(10); // 넉넉하게 가져와서 필터링 (이미 trending에 있는 것 제외)
+            fallbackRequest.setUserId(userId);
+
+            List<VideoResponseDto> fallback = videoMapper.selectVideoList(fallbackRequest);
+
+            for (VideoResponseDto video : fallback) {
+                if (trending.size() >= 3)
+                    break;
+
+                // 중복 체크
+                boolean exists = false;
+                for (VideoResponseDto t : trending) {
+                    if (t.getVideoId().equals(video.getVideoId())) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists) {
+                    trending.add(video);
+                }
+            }
+        }
+
+        // 그래도 데이터가 없으면... 어쩔 수 없음 (0개 리턴)
+        return trending;
+    }
 }

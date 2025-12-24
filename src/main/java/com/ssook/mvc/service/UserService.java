@@ -20,9 +20,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-	
-	private final JwtUtil jwtUtil; // JwtUtil 주입 (RequiredArgsConstructor 덕분에 자동 주입됨)
-	
+
+    private final JwtUtil jwtUtil; // JwtUtil 주입 (RequiredArgsConstructor 덕분에 자동 주입됨)
+
     private final UserMapper userMapper;
 
     // 프론트에서 보여줄 이미지 목록
@@ -54,12 +54,12 @@ public class UserService {
         // 5. DB 저장
         userMapper.saveUser(user);
     }
-    
+
     @Transactional(readOnly = true) // 읽기 전용 모드 (성능 최적화)
     public String login(UserLoginRequest request) {
         // 1. 이메일로 사용자 조회
         UserEntity user = userMapper.findByEmail(request.getEmail());
-        
+
         // 2. 사용자가 없거나, 비밀번호가 틀리면 에러
         if (user == null || !BCrypt.checkpw(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
@@ -68,23 +68,23 @@ public class UserService {
         // 3. 인증 성공 시 토큰 생성 후 반환
         return jwtUtil.generateToken(user.getUserId(), user.getEmail());
     }
-    
+
     // 내 정보 조회
     @Transactional(readOnly = true)
     public UserInfoResponse getMyInfo(Long userId) {
         // DB에서 조회
         UserEntity user = userMapper.findById(userId);
-        
+
         // 없으면 에러 (혹시 탈퇴했거나 잘못된 토큰일 경우)
         if (user == null) {
             throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
         }
-        
+
         // Entity -> DTO 변환해서 반환 (비밀번호 제외됨)
         return UserInfoResponse.from(user);
     }
-    
-	// 내 정보 수정
+
+    // 내 정보 수정
     @Transactional
     public UserInfoResponse modifyUser(Long userId, UserModifyRequest request) {
         // 기존 유저 정보 조회
@@ -95,8 +95,8 @@ public class UserService {
 
         // 닉네임 중복 검사 (중요: "닉네임이 바뀌었을 때만" 검사해야 함)
         // 기존 닉네임이랑 다른데(바꿨는데) && DB에 이미 있다면 -> 에러
-        if (!user.getNickname().equals(request.getNickname()) 
-             && userMapper.existsByNickname(request.getNickname())) {
+        if (!user.getNickname().equals(request.getNickname())
+                && userMapper.existsByNickname(request.getNickname())) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
@@ -122,7 +122,7 @@ public class UserService {
         // 변경된 최신 정보를 DTO로 변환해서 반환
         return UserInfoResponse.from(user);
     }
-    
+
     // 회원 탈퇴
     @Transactional
     public void deleteUser(Long userId) {
@@ -135,5 +135,26 @@ public class UserService {
         // 삭제 수행
         userMapper.deleteUser(userId);
     }
-    
+
+    // 비밀번호 변경
+    @Transactional
+    public void changePassword(Long userId, com.ssook.mvc.dto.user.UserPasswordChangeRequest request) {
+        // 1. 유저 조회
+        UserEntity user = userMapper.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+        }
+
+        // 2. 현재 비밀번호 확인
+        if (!BCrypt.checkpw(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 새 비밀번호 암호화 및 설정
+        String newEncodedPassword = BCrypt.hashpw(request.getNewPassword(), BCrypt.gensalt());
+        user.setPassword(newEncodedPassword);
+
+        // 4. DB 업데이트
+        userMapper.updatePassword(user);
+    }
 }
