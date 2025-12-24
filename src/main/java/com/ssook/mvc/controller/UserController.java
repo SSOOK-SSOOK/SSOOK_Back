@@ -130,4 +130,16 @@ public class UserController {
         UserStatsResponseDto stats = videoService.getUserStats(userId);
         return ApiResponse.success(stats);
     }
+
+    // 비밀번호 변경 API
+    @PatchMapping("/me/password")
+    public ApiResponse<Object> changePassword(
+            @Valid @RequestBody com.ssook.mvc.dto.user.UserPasswordChangeRequest request,
+            HttpServletRequest httpRequest) {
+
+        Long userId = (Long) httpRequest.getAttribute("userId");
+        userService.changePassword(userId, request);
+
+        return ApiResponse.createSuccess("비밀번호가 성공적으로 변경되었습니다.");
+    }
 }

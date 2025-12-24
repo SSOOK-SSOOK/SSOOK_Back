@@ -27,4 +27,7 @@ public interface VideoMapper {
 
     // 최애 카테고리 조회
     String selectTopCategory(Long userId);
+
+    // 급상승 영상 조회
+    List<VideoResponseDto> selectTrendingVideos(Long userId);
 }

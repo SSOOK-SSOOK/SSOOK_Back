@@ -14,12 +14,14 @@ public interface UserMapper {
 
     // 닉네임 중복 체크
     boolean existsByNickname(String nickname);
-    
+
     UserEntity findByEmail(String email);
-    
+
     UserEntity findById(Long userId);
-    
-    void updateUser(UserEntity user);
-    
+
+    void updateUser(UserEntity user); // For Profile Info
+
+    void updatePassword(UserEntity user); // For Password Change
+
     void deleteUser(Long userId);
 }
