@@ -49,6 +49,7 @@ public class VideoService {
                     ));
                 } catch (Exception e) {
                     // 중복 시청 등 에러 무시 (혹은 로거)
+                    System.err.println("[VideoService] Failed to insert view history: " + e.getMessage());
                 }
             }
         }
@@ -79,25 +80,43 @@ public class VideoService {
 
             // 데이터가 정렬되어 있다고 가정 (ORDER BY created_at DESC)
             for (java.util.Map<String, Object> log : history) {
-                java.sql.Date sqlDate = (java.sql.Date) log.get("viewDate");
-                java.time.LocalDate viewDate = sqlDate.toLocalDate();
+                try {
+                    Object dateObj = log.get("viewDate");
+                    // MyBatis Map keys might be case-sensitive depending on config (try upper case
+                    // if null)
+                    if (dateObj == null)
+                        dateObj = log.get("VIEWDATE");
 
-                if (lastDate == null) {
-                    // 첫 기록이 오늘 또는 어제여야 스트릭 유지
-                    if (viewDate.equals(today) || viewDate.equals(today.minusDays(1))) {
-                        streak = 1;
-                        lastDate = viewDate;
+                    if (dateObj == null)
+                        continue; // Skip if date is missing
+
+                    java.time.LocalDate viewDate;
+                    if (dateObj instanceof java.sql.Date) {
+                        viewDate = ((java.sql.Date) dateObj).toLocalDate();
                     } else {
-                        break; // 스트릭 끊김
+                        // Handle strict date or string parsing
+                        viewDate = java.sql.Date.valueOf(dateObj.toString()).toLocalDate();
                     }
-                } else {
-                    if (viewDate.equals(lastDate.minusDays(1))) {
-                        streak++;
-                        lastDate = viewDate;
-                    } else if (viewDate.isBefore(lastDate.minusDays(1))) {
-                        break;
+
+                    if (lastDate == null) {
+                        // 첫 기록이 오늘 또는 어제여야 스트릭 유지
+                        if (viewDate.equals(today) || viewDate.equals(today.minusDays(1))) {
+                            streak = 1;
+                            lastDate = viewDate;
+                        } else {
+                            break; // 스트릭 끊김
+                        }
+                    } else {
+                        if (viewDate.equals(lastDate.minusDays(1))) {
+                            streak++;
+                            lastDate = viewDate;
+                        } else if (viewDate.isBefore(lastDate.minusDays(1))) {
+                            break;
+                        }
+                        // 같은 날짜면 패스
                     }
-                    // 같은 날짜면 패스
+                } catch (Exception e) {
+                    System.err.println("[VideoService] Error calculating streak: " + e.getMessage());
                 }
             }
         }
@@ -111,7 +130,18 @@ public class VideoService {
         // 0~5: 새벽, 6~11: 오전, 12~17: 오후, 18~23: 저녁
         int[] timeSlots = new int[4]; // 0, 1, 2, 3
         for (java.util.Map<String, Object> log : history) {
-            int hour = (int) log.get("viewHour");
+            Object hourObj = log.get("viewHour");
+            if (hourObj == null)
+                hourObj = log.get("VIEWHOUR");
+
+            if (hourObj == null)
+                continue;
+
+            int hour = 0;
+            if (hourObj instanceof Number) {
+                hour = ((Number) hourObj).intValue();
+            }
+
             if (hour >= 0 && hour < 6)
                 timeSlots[0]++;
             else if (hour >= 6 && hour < 12)
